@@ -26191,6 +26191,7 @@ export const sysinfo = $root.sysinfo = (() => {
          * @property {Array.<sysinfo.ICPU>|null} [cpu] EnvelopeData cpu
          * @property {Array.<sysinfo.IDisk>|null} [disks] EnvelopeData disks
          * @property {Array.<sysinfo.INetwork>|null} [networks] EnvelopeData networks
+         * @property {Array.<sysinfo.ISerialDevice>|null} [serialDevices] EnvelopeData serialDevices
          * @property {Array.<sysinfo.ITemperatureSensor>|null} [temperatures] EnvelopeData temperatures
          * @property {Array.<sysinfo.IPowerSource>|null} [powerSources] EnvelopeData powerSources
          * @property {Array.<sysinfo.ICellularModem>|null} [cellularModems] EnvelopeData cellularModems
@@ -26209,6 +26210,7 @@ export const sysinfo = $root.sysinfo = (() => {
             this.cpu = [];
             this.disks = [];
             this.networks = [];
+            this.serialDevices = [];
             this.temperatures = [];
             this.powerSources = [];
             this.cellularModems = [];
@@ -26323,6 +26325,14 @@ export const sysinfo = $root.sysinfo = (() => {
         EnvelopeData.prototype.networks = $util.emptyArray;
 
         /**
+         * EnvelopeData serialDevices.
+         * @member {Array.<sysinfo.ISerialDevice>} serialDevices
+         * @memberof sysinfo.EnvelopeData
+         * @instance
+         */
+        EnvelopeData.prototype.serialDevices = $util.emptyArray;
+
+        /**
          * EnvelopeData temperatures.
          * @member {Array.<sysinfo.ITemperatureSensor>} temperatures
          * @memberof sysinfo.EnvelopeData
@@ -26400,6 +26410,9 @@ export const sysinfo = $root.sysinfo = (() => {
             if (message.networks != null && message.networks.length)
                 for (let i = 0; i < message.networks.length; ++i)
                     $root.sysinfo.Network.encode(message.networks[i], writer.uint32(/* id 13, wireType 2 =*/106).fork()).ldelim();
+            if (message.serialDevices != null && message.serialDevices.length)
+                for (let i = 0; i < message.serialDevices.length; ++i)
+                    $root.sysinfo.SerialDevice.encode(message.serialDevices[i], writer.uint32(/* id 14, wireType 2 =*/114).fork()).ldelim();
             if (message.temperatures != null && message.temperatures.length)
                 for (let i = 0; i < message.temperatures.length; ++i)
                     $root.sysinfo.TemperatureSensor.encode(message.temperatures[i], writer.uint32(/* id 20, wireType 2 =*/162).fork()).ldelim();
@@ -26507,6 +26520,12 @@ export const sysinfo = $root.sysinfo = (() => {
                         if (!(message.networks && message.networks.length))
                             message.networks = [];
                         message.networks.push($root.sysinfo.Network.decode(reader, reader.uint32(), undefined, long + 1));
+                        break;
+                    }
+                case 14: {
+                        if (!(message.serialDevices && message.serialDevices.length))
+                            message.serialDevices = [];
+                        message.serialDevices.push($root.sysinfo.SerialDevice.decode(reader, reader.uint32(), undefined, long + 1));
                         break;
                     }
                 case 20: {
@@ -26637,6 +26656,15 @@ export const sysinfo = $root.sysinfo = (() => {
                         return "networks." + error;
                 }
             }
+            if (message.serialDevices != null && message.hasOwnProperty("serialDevices")) {
+                if (!Array.isArray(message.serialDevices))
+                    return "serialDevices: array expected";
+                for (let i = 0; i < message.serialDevices.length; ++i) {
+                    let error = $root.sysinfo.SerialDevice.verify(message.serialDevices[i], long + 1);
+                    if (error)
+                        return "serialDevices." + error;
+                }
+            }
             if (message.temperatures != null && message.hasOwnProperty("temperatures")) {
                 if (!Array.isArray(message.temperatures))
                     return "temperatures: array expected";
@@ -26760,6 +26788,16 @@ export const sysinfo = $root.sysinfo = (() => {
                     message.networks[i] = $root.sysinfo.Network.fromObject(object.networks[i], long + 1);
                 }
             }
+            if (object.serialDevices) {
+                if (!Array.isArray(object.serialDevices))
+                    throw TypeError(".sysinfo.EnvelopeData.serialDevices: array expected");
+                message.serialDevices = [];
+                for (let i = 0; i < object.serialDevices.length; ++i) {
+                    if (typeof object.serialDevices[i] !== "object")
+                        throw TypeError(".sysinfo.EnvelopeData.serialDevices: object expected");
+                    message.serialDevices[i] = $root.sysinfo.SerialDevice.fromObject(object.serialDevices[i], long + 1);
+                }
+            }
             if (object.temperatures) {
                 if (!Array.isArray(object.temperatures))
                     throw TypeError(".sysinfo.EnvelopeData.temperatures: array expected");
@@ -26811,6 +26849,7 @@ export const sysinfo = $root.sysinfo = (() => {
                 object.cpu = [];
                 object.disks = [];
                 object.networks = [];
+                object.serialDevices = [];
                 object.temperatures = [];
                 object.powerSources = [];
                 object.cellularModems = [];
@@ -26870,6 +26909,11 @@ export const sysinfo = $root.sysinfo = (() => {
                 object.networks = [];
                 for (let j = 0; j < message.networks.length; ++j)
                     object.networks[j] = $root.sysinfo.Network.toObject(message.networks[j], options);
+            }
+            if (message.serialDevices && message.serialDevices.length) {
+                object.serialDevices = [];
+                for (let j = 0; j < message.serialDevices.length; ++j)
+                    object.serialDevices[j] = $root.sysinfo.SerialDevice.toObject(message.serialDevices[j], options);
             }
             if (message.temperatures && message.temperatures.length) {
                 object.temperatures = [];
@@ -29851,6 +29895,362 @@ export const sysinfo = $root.sysinfo = (() => {
         };
 
         return Network;
+    })();
+
+    sysinfo.SerialDevice = (function() {
+
+        /**
+         * Properties of a SerialDevice.
+         * @memberof sysinfo
+         * @interface ISerialDevice
+         * @property {string|null} [portName] SerialDevice portName
+         * @property {number|null} [vid] SerialDevice vid
+         * @property {number|null} [pid] SerialDevice pid
+         * @property {string|null} [serialNumber] SerialDevice serialNumber
+         * @property {string|null} [manufacturer] SerialDevice manufacturer
+         * @property {string|null} [product] SerialDevice product
+         * @property {string|null} [portType] SerialDevice portType
+         */
+
+        /**
+         * Constructs a new SerialDevice.
+         * @memberof sysinfo
+         * @classdesc Represents a SerialDevice.
+         * @implements ISerialDevice
+         * @constructor
+         * @param {sysinfo.ISerialDevice=} [properties] Properties to set
+         */
+        function SerialDevice(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null && keys[i] !== "__proto__")
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * SerialDevice portName.
+         * @member {string} portName
+         * @memberof sysinfo.SerialDevice
+         * @instance
+         */
+        SerialDevice.prototype.portName = "";
+
+        /**
+         * SerialDevice vid.
+         * @member {number} vid
+         * @memberof sysinfo.SerialDevice
+         * @instance
+         */
+        SerialDevice.prototype.vid = 0;
+
+        /**
+         * SerialDevice pid.
+         * @member {number} pid
+         * @memberof sysinfo.SerialDevice
+         * @instance
+         */
+        SerialDevice.prototype.pid = 0;
+
+        /**
+         * SerialDevice serialNumber.
+         * @member {string} serialNumber
+         * @memberof sysinfo.SerialDevice
+         * @instance
+         */
+        SerialDevice.prototype.serialNumber = "";
+
+        /**
+         * SerialDevice manufacturer.
+         * @member {string} manufacturer
+         * @memberof sysinfo.SerialDevice
+         * @instance
+         */
+        SerialDevice.prototype.manufacturer = "";
+
+        /**
+         * SerialDevice product.
+         * @member {string} product
+         * @memberof sysinfo.SerialDevice
+         * @instance
+         */
+        SerialDevice.prototype.product = "";
+
+        /**
+         * SerialDevice portType.
+         * @member {string} portType
+         * @memberof sysinfo.SerialDevice
+         * @instance
+         */
+        SerialDevice.prototype.portType = "";
+
+        /**
+         * Creates a new SerialDevice instance using the specified properties.
+         * @function create
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {sysinfo.ISerialDevice=} [properties] Properties to set
+         * @returns {sysinfo.SerialDevice} SerialDevice instance
+         */
+        SerialDevice.create = function create(properties) {
+            return new SerialDevice(properties);
+        };
+
+        /**
+         * Encodes the specified SerialDevice message. Does not implicitly {@link sysinfo.SerialDevice.verify|verify} messages.
+         * @function encode
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {sysinfo.ISerialDevice} message SerialDevice message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SerialDevice.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.portName != null && Object.hasOwnProperty.call(message, "portName"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.portName);
+            if (message.vid != null && Object.hasOwnProperty.call(message, "vid"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.vid);
+            if (message.pid != null && Object.hasOwnProperty.call(message, "pid"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.pid);
+            if (message.serialNumber != null && Object.hasOwnProperty.call(message, "serialNumber"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.serialNumber);
+            if (message.manufacturer != null && Object.hasOwnProperty.call(message, "manufacturer"))
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.manufacturer);
+            if (message.product != null && Object.hasOwnProperty.call(message, "product"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.product);
+            if (message.portType != null && Object.hasOwnProperty.call(message, "portType"))
+                writer.uint32(/* id 10, wireType 2 =*/82).string(message.portType);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified SerialDevice message, length delimited. Does not implicitly {@link sysinfo.SerialDevice.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {sysinfo.ISerialDevice} message SerialDevice message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SerialDevice.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a SerialDevice message from the specified reader or buffer.
+         * @function decode
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {sysinfo.SerialDevice} SerialDevice
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SerialDevice.decode = function decode(reader, length, error, long) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            if (long === undefined)
+                long = 0;
+            if (long > $Reader.recursionLimit)
+                throw Error("maximum nesting depth exceeded");
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.sysinfo.SerialDevice();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                if (tag === error)
+                    break;
+                switch (tag >>> 3) {
+                case 1: {
+                        message.portName = reader.string();
+                        break;
+                    }
+                case 2: {
+                        message.vid = reader.uint32();
+                        break;
+                    }
+                case 3: {
+                        message.pid = reader.uint32();
+                        break;
+                    }
+                case 4: {
+                        message.serialNumber = reader.string();
+                        break;
+                    }
+                case 5: {
+                        message.manufacturer = reader.string();
+                        break;
+                    }
+                case 6: {
+                        message.product = reader.string();
+                        break;
+                    }
+                case 10: {
+                        message.portType = reader.string();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7, long);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a SerialDevice message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {sysinfo.SerialDevice} SerialDevice
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SerialDevice.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a SerialDevice message.
+         * @function verify
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        SerialDevice.verify = function verify(message, long) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (long === undefined)
+                long = 0;
+            if (long > $util.recursionLimit)
+                return "maximum nesting depth exceeded";
+            if (message.portName != null && message.hasOwnProperty("portName"))
+                if (!$util.isString(message.portName))
+                    return "portName: string expected";
+            if (message.vid != null && message.hasOwnProperty("vid"))
+                if (!$util.isInteger(message.vid))
+                    return "vid: integer expected";
+            if (message.pid != null && message.hasOwnProperty("pid"))
+                if (!$util.isInteger(message.pid))
+                    return "pid: integer expected";
+            if (message.serialNumber != null && message.hasOwnProperty("serialNumber"))
+                if (!$util.isString(message.serialNumber))
+                    return "serialNumber: string expected";
+            if (message.manufacturer != null && message.hasOwnProperty("manufacturer"))
+                if (!$util.isString(message.manufacturer))
+                    return "manufacturer: string expected";
+            if (message.product != null && message.hasOwnProperty("product"))
+                if (!$util.isString(message.product))
+                    return "product: string expected";
+            if (message.portType != null && message.hasOwnProperty("portType"))
+                if (!$util.isString(message.portType))
+                    return "portType: string expected";
+            return null;
+        };
+
+        /**
+         * Creates a SerialDevice message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {sysinfo.SerialDevice} SerialDevice
+         */
+        SerialDevice.fromObject = function fromObject(object, long) {
+            if (object instanceof $root.sysinfo.SerialDevice)
+                return object;
+            if (long === undefined)
+                long = 0;
+            if (long > $util.recursionLimit)
+                throw Error("maximum nesting depth exceeded");
+            let message = new $root.sysinfo.SerialDevice();
+            if (object.portName != null)
+                message.portName = String(object.portName);
+            if (object.vid != null)
+                message.vid = object.vid >>> 0;
+            if (object.pid != null)
+                message.pid = object.pid >>> 0;
+            if (object.serialNumber != null)
+                message.serialNumber = String(object.serialNumber);
+            if (object.manufacturer != null)
+                message.manufacturer = String(object.manufacturer);
+            if (object.product != null)
+                message.product = String(object.product);
+            if (object.portType != null)
+                message.portType = String(object.portType);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a SerialDevice message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {sysinfo.SerialDevice} message SerialDevice
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        SerialDevice.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.portName = "";
+                object.vid = 0;
+                object.pid = 0;
+                object.serialNumber = "";
+                object.manufacturer = "";
+                object.product = "";
+                object.portType = "";
+            }
+            if (message.portName != null && message.hasOwnProperty("portName"))
+                object.portName = message.portName;
+            if (message.vid != null && message.hasOwnProperty("vid"))
+                object.vid = message.vid;
+            if (message.pid != null && message.hasOwnProperty("pid"))
+                object.pid = message.pid;
+            if (message.serialNumber != null && message.hasOwnProperty("serialNumber"))
+                object.serialNumber = message.serialNumber;
+            if (message.manufacturer != null && message.hasOwnProperty("manufacturer"))
+                object.manufacturer = message.manufacturer;
+            if (message.product != null && message.hasOwnProperty("product"))
+                object.product = message.product;
+            if (message.portType != null && message.hasOwnProperty("portType"))
+                object.portType = message.portType;
+            return object;
+        };
+
+        /**
+         * Converts this SerialDevice to JSON.
+         * @function toJSON
+         * @memberof sysinfo.SerialDevice
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        SerialDevice.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for SerialDevice
+         * @function getTypeUrl
+         * @memberof sysinfo.SerialDevice
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        SerialDevice.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/sysinfo.SerialDevice";
+        };
+
+        return SerialDevice;
     })();
 
     sysinfo.TemperatureSensor = (function() {

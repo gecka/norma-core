@@ -16,6 +16,8 @@ use tokio::time;
 const QUEUE_ID: &str = "system/rx";
 const CELLULAR_REFRESH_INTERVAL_SECS: u64 = 5;
 const CELLULAR_REFRESH_INTERVAL_NS: u64 = CELLULAR_REFRESH_INTERVAL_SECS * 1_000_000_000;
+const SERIAL_REFRESH_INTERVAL_SECS: u64 = 5;
+const SERIAL_REFRESH_INTERVAL_NS: u64 = SERIAL_REFRESH_INTERVAL_SECS * 1_000_000_000;
 
 pub mod sysinfo_proto {
     pub mod sysinfo {
@@ -25,10 +27,11 @@ pub mod sysinfo_proto {
 
 mod cellular;
 mod power;
+mod serial;
 
 use crate::sysinfo_proto::sysinfo::{
     CellularModem, Cpu, Disk, Envelope, EnvelopeData, Memory, Motherboard, Network, NetworkIp,
-    OsInfo, PowerSource, TemperatureSensor, TimeInfo, User,
+    OsInfo, PowerSource, SerialDevice, TemperatureSensor, TimeInfo, User,
 };
 
 pub struct SystemMonitor {
@@ -41,12 +44,19 @@ pub struct SystemMonitor {
     users: Arc<RwLock<Users>>,
     static_data: Arc<StaticSystemData>,
     cellular_cache: Arc<RwLock<CellularCache>>,
+    serial_cache: Arc<RwLock<SerialCache>>,
 }
 
 #[derive(Default)]
 struct CellularCache {
     next_refresh_monotonic_stamp_ns: u64,
     modems: Vec<CellularModem>,
+}
+
+#[derive(Default)]
+struct SerialCache {
+    next_refresh_monotonic_stamp_ns: u64,
+    devices: Vec<SerialDevice>,
 }
 
 struct StaticSystemData {
@@ -92,6 +102,7 @@ impl SystemMonitor {
             users: Arc::new(RwLock::new(users)),
             static_data,
             cellular_cache: Arc::new(RwLock::new(CellularCache::default())),
+            serial_cache: Arc::new(RwLock::new(SerialCache::default())),
         })
     }
 
@@ -123,6 +134,7 @@ impl SystemMonitor {
     async fn collect_system_data(&self) -> Result<Envelope, Box<dyn std::error::Error>> {
         let cellular_modems = self.collect_cellular_modems().await;
         let power_sources = self.collect_power_sources().await;
+        let serial_devices = self.collect_serial_devices().await;
         let mut system = self.system.write().await;
         let mut disks = self.disks.write().await;
         let mut networks = self.networks.write().await;
@@ -149,6 +161,7 @@ impl SystemMonitor {
             cpu: self.collect_cpu_data(&system),
             disks: self.collect_disk_data(&disks),
             networks: self.collect_network_data(&networks),
+            serial_devices,
             temperatures: self.collect_temperature_data(&components),
             power_sources,
             cellular_modems,
@@ -290,6 +303,23 @@ impl SystemMonitor {
             systime::get_monotonic_stamp_ns().saturating_add(CELLULAR_REFRESH_INTERVAL_NS);
         cache.modems = modems;
         cache.modems.clone()
+    }
+
+    async fn collect_serial_devices(&self) -> Vec<SerialDevice> {
+        let mut cache = self.serial_cache.write().await;
+        let now_ns = systime::get_monotonic_stamp_ns();
+        if now_ns < cache.next_refresh_monotonic_stamp_ns {
+            return cache.devices.clone();
+        }
+
+        let devices = tokio::task::spawn_blocking(serial::collect_serial_devices)
+            .await
+            .unwrap_or_default();
+
+        cache.next_refresh_monotonic_stamp_ns =
+            systime::get_monotonic_stamp_ns().saturating_add(SERIAL_REFRESH_INTERVAL_NS);
+        cache.devices = devices;
+        cache.devices.clone()
     }
 
     fn get_timezone_offset_seconds() -> i32 {

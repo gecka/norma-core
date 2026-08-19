@@ -9177,6 +9177,9 @@ export namespace sysinfo {
         /** EnvelopeData networks */
         networks?: (sysinfo.INetwork[]|null);
 
+        /** EnvelopeData serialDevices */
+        serialDevices?: (sysinfo.ISerialDevice[]|null);
+
         /** EnvelopeData temperatures */
         temperatures?: (sysinfo.ITemperatureSensor[]|null);
 
@@ -9234,6 +9237,9 @@ export namespace sysinfo {
 
         /** EnvelopeData networks. */
         public networks: sysinfo.INetwork[];
+
+        /** EnvelopeData serialDevices. */
+        public serialDevices: sysinfo.ISerialDevice[];
 
         /** EnvelopeData temperatures. */
         public temperatures: sysinfo.ITemperatureSensor[];
@@ -10375,6 +10381,139 @@ export namespace sysinfo {
 
         /**
          * Gets the default type url for Network
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a SerialDevice. */
+    interface ISerialDevice {
+
+        /** SerialDevice portName */
+        portName?: (string|null);
+
+        /** SerialDevice vid */
+        vid?: (number|null);
+
+        /** SerialDevice pid */
+        pid?: (number|null);
+
+        /** SerialDevice serialNumber */
+        serialNumber?: (string|null);
+
+        /** SerialDevice manufacturer */
+        manufacturer?: (string|null);
+
+        /** SerialDevice product */
+        product?: (string|null);
+
+        /** SerialDevice portType */
+        portType?: (string|null);
+    }
+
+    /** Represents a SerialDevice. */
+    class SerialDevice implements ISerialDevice {
+
+        /**
+         * Constructs a new SerialDevice.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: sysinfo.ISerialDevice);
+
+        /** SerialDevice portName. */
+        public portName: string;
+
+        /** SerialDevice vid. */
+        public vid: number;
+
+        /** SerialDevice pid. */
+        public pid: number;
+
+        /** SerialDevice serialNumber. */
+        public serialNumber: string;
+
+        /** SerialDevice manufacturer. */
+        public manufacturer: string;
+
+        /** SerialDevice product. */
+        public product: string;
+
+        /** SerialDevice portType. */
+        public portType: string;
+
+        /**
+         * Creates a new SerialDevice instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SerialDevice instance
+         */
+        public static create(properties?: sysinfo.ISerialDevice): sysinfo.SerialDevice;
+
+        /**
+         * Encodes the specified SerialDevice message. Does not implicitly {@link sysinfo.SerialDevice.verify|verify} messages.
+         * @param message SerialDevice message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: sysinfo.ISerialDevice, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified SerialDevice message, length delimited. Does not implicitly {@link sysinfo.SerialDevice.verify|verify} messages.
+         * @param message SerialDevice message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: sysinfo.ISerialDevice, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a SerialDevice message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns SerialDevice
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): sysinfo.SerialDevice;
+
+        /**
+         * Decodes a SerialDevice message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns SerialDevice
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): sysinfo.SerialDevice;
+
+        /**
+         * Verifies a SerialDevice message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a SerialDevice message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns SerialDevice
+         */
+        public static fromObject(object: { [k: string]: any }): sysinfo.SerialDevice;
+
+        /**
+         * Creates a plain object from a SerialDevice message. Also converts values to other types if specified.
+         * @param message SerialDevice
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: sysinfo.SerialDevice, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this SerialDevice to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for SerialDevice
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */

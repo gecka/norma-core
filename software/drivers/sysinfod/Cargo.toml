@@ -10,6 +10,7 @@ systime = { path = "../../station/shared/systime-rs" }
 station_iface = { path = "../../station/shared/station-iface" }
 prost = { workspace = true }
 sysinfo = "0.37.2"
+tokio-serial = { workspace = true }
 libc = "0.2"
 bytes = { workspace = true }
 i2c-async = { path = "../../../shared/i2c-async" }
